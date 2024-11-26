@@ -1,32 +1,7 @@
-from enum import Enum
-
-class TokenType(Enum):
-    Y = 'y'
-    O = 'o'
-    SI = 'si'
-    ENTONCES = 'entonces'
-    NOT = 'no'
-    EOL = 'eol'
-    PALABRA = ''
-    
-
-class Token:
-    def __init__(self, tipo, valor):
-        self.tipo = tipo
-        self.valor = valor
-
-class Operador:
-    def __init__(self, tipo, valor):
-        self.tipo = tipo
-        self.valor = valor
-        
-class Proposicion:
-    def __init__(self, listaTokens):
-        self.listaTokens = listaTokens
-        self.posicion = 0
-    def ObtenerFrase(self):
-        return ' '.join(token.valor for token in self.listaTokens)
-            
+import Token
+import TokenType
+import Proposicion
+import Operador
 
 def main():
     # Solicta al que ingrese una proposicion
