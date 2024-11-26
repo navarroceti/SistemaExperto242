@@ -1,7 +1,7 @@
-import Token
-import TokenType
-import Proposicion
-import Operador
+from Operador import *
+from Proposicion import *
+from Token import *
+from TokenType import *
 
 def main():
     # Solicta al que ingrese una proposicion
