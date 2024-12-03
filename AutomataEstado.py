@@ -11,3 +11,4 @@ class AutomataEstado(Enum):
     NEG_PB = 7
     PROP_B = 8
     FIN = 9
+    ERROR = 10

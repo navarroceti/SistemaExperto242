@@ -37,47 +37,28 @@ def main():
         print(token.tipo, token.valor)
         
     # Analizar tokens con el automata : Analizador Sintactico
+    def print_ast(node, level=0):
+        indent = "  " * level
+        if isinstance(node, PropNode):
+            print(f"{indent}PropNode: {node.value}")
+        elif isinstance(node, NegNode):
+            print(f"{indent}NegNode")
+            print_ast(node.child, level + 1)
+        elif isinstance(node, CondNode):
+            print(f"{indent}CondNode: {node.operator}")
+            print_ast(node.left, level + 1)
+            print_ast(node.right, level + 1)
+            
     print("\nProcesar Automata:")
     automata = Automata()
-    try:
-        for token in listaTokens:
-            automata.transition(token.tipo)
-        if automata.is_accepting():
-            print("La secuencia es aceptada por el autómata.")
-        else:
-            print("La secuencia no es aceptada por el autómata.")
-    except ValueError as e:
-        print("La secuencia no es aceptada por el autómata.")
-    
-        
-    # Recorre los elementos y agrupa toda las palabras consecutivas en una lista
-    listaProposiciones = []
-    listaPalabras = []
-    for token in listaTokens:
-        if token.tipo == TokenType.PALABRA:
-            listaPalabras.append(token)
-        else:
-            if len(listaPalabras) > 0:
-                listaProposiciones.append(Proposicion(listaPalabras))
-                listaPalabras = []
-                
-    # # Imprime la lista de proposiciones
-    # print("\nLista de proposiciones:")
-    # for proposicion in listaProposiciones:
-    #     print(proposicion.ObtenerFrase())
-        
-    # # Crear un conjunto para que no se repitan las proposiciones
-    # conjuntoProposiciones = set()
-    # for proposicion in listaProposiciones:
-    #     conjuntoProposiciones.add(proposicion.ObtenerFrase())
-        
-    # # Imprimir el conjunto de proposiciones
-    # print("\nConjunto de proposiciones:")
-    # for proposicion in conjuntoProposiciones:
-    #     print(proposicion)
-    
+    resultado = automata.evaluar(listaTokens)
 
-       
+    if resultado:
+        print("La proposición es correcta.")
+        print("\nAST generado:")
+        print_ast(resultado)  # Asumiendo que tienes una función para imprimir el AST
+    else:
+        print("La proposición es incorrecta.")    
     
 if __name__ == "__main__":
     main()

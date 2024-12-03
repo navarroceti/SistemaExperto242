@@ -1,6 +1,7 @@
 from TokenType import TokenType
+from Token import Token
 from AutomataEstado import AutomataEstado
-
+from ASTNodes import *
 
 class Automata:
     def __init__(self):
@@ -16,12 +17,39 @@ class Automata:
             AutomataEstado.PROP_B: {TokenType.PALABRA: AutomataEstado.PROP_B, TokenType.EOL: AutomataEstado.FIN}
         }
         self.state = AutomataEstado.INICIO
+        self.ast = None
+        self.current_node = None
 
-    def transition(self, input_symbol):
-        if input_symbol in self.transitions[self.state]:
-            self.state = self.transitions[self.state][input_symbol]
+    def transition(self, input_token: Token):
+        if input_token.tipo in self.transitions[self.state]:
+            self.state = self.transitions[self.state][input_token.tipo]
+            self.build_ast(input_token)
         else:
-            raise ValueError(f"No transition for symbol {input_symbol} in state {self.state}")
+            # No hay transicion, cambiar a error
+            self.state = AutomataEstado.ERROR
+
+    def build_ast(self, input_token):
+        if self.state == AutomataEstado.PROP:
+            self.current_node = PropNode(input_token)
+            self.ast = self.current_node
+        elif self.state == AutomataEstado.NEG:
+            self.current_node = NegNode(self.current_node)
+            self.ast = self.current_node
+        elif self.state in [AutomataEstado.COND_1, AutomataEstado.COND_2]:
+            operator = 'O' if input_token == TokenType.O else 'Y'
+            self.current_node = CondNode(self.ast, operator, None)
+            self.ast = self.current_node
+        elif self.state == AutomataEstado.PROP_A:
+            self.current_node.right = PropNode(input_token)
+        elif self.state == AutomataEstado.PROP_B:
+            self.current_node.right = PropNode(input_token)
 
     def is_accepting(self):
         return self.state == AutomataEstado.FIN
+
+    def evaluar(self, listaTokens):
+        for token in listaTokens:
+            self.transition(token)
+            if self.state == AutomataEstado.ERROR:
+                return None
+        return self.ast if self.is_accepting() else None
