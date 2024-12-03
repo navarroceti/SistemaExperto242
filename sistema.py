@@ -1,3 +1,4 @@
+from Automata import *
 from Operador import *
 from Proposicion import *
 from Token import *
@@ -19,6 +20,8 @@ def main():
             listaTokens.append(Token(TokenType.Y, token))
         elif token == 'o':
             listaTokens.append(Token(TokenType.O, token))
+        elif token == 'si':
+            listaTokens.append(Token(TokenType.SI, token))
         elif token == 'entonces':
             listaTokens.append(Token(TokenType.ENTONCES, token))
         elif token == 'no':
@@ -33,6 +36,20 @@ def main():
     for token in listaTokens:
         print(token.tipo, token.valor)
         
+    # Analizar tokens con el automata : Analizador Sintactico
+    print("\nProcesar Automata:")
+    automata = Automata()
+    try:
+        for token in listaTokens:
+            automata.transition(token.tipo)
+        if automata.is_accepting():
+            print("La secuencia es aceptada por el autómata.")
+        else:
+            print("La secuencia no es aceptada por el autómata.")
+    except ValueError as e:
+        print("La secuencia no es aceptada por el autómata.")
+    
+        
     # Recorre los elementos y agrupa toda las palabras consecutivas en una lista
     listaProposiciones = []
     listaPalabras = []
@@ -44,21 +61,22 @@ def main():
                 listaProposiciones.append(Proposicion(listaPalabras))
                 listaPalabras = []
                 
-    # Imprime la lista de proposiciones
-    print("\nLista de proposiciones:")
-    for proposicion in listaProposiciones:
-        print(proposicion.ObtenerFrase())
+    # # Imprime la lista de proposiciones
+    # print("\nLista de proposiciones:")
+    # for proposicion in listaProposiciones:
+    #     print(proposicion.ObtenerFrase())
         
+    # # Crear un conjunto para que no se repitan las proposiciones
+    # conjuntoProposiciones = set()
+    # for proposicion in listaProposiciones:
+    #     conjuntoProposiciones.add(proposicion.ObtenerFrase())
         
-    # Crear un conjunto para que no se repitan las proposiciones
-    conjuntoProposiciones = set()
-    for proposicion in listaProposiciones:
-        conjuntoProposiciones.add(proposicion.ObtenerFrase())
-        
-    # Imprimir el conjunto de proposiciones
-    print("\nConjunto de proposiciones:")
-    for proposicion in conjuntoProposiciones:
-        print(proposicion)
+    # # Imprimir el conjunto de proposiciones
+    # print("\nConjunto de proposiciones:")
+    # for proposicion in conjuntoProposiciones:
+    #     print(proposicion)
+    
+
        
     
 if __name__ == "__main__":
