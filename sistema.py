@@ -1,19 +1,13 @@
 from Automata import *
-from Operador import *
 from Proposicion import *
 from Token import *
 from TokenType import *
 
-def main():
-    # Solicta al que ingrese una proposicion
-    print("Ingrese una proposicion: ")
-    proposicion = input()
-    
-    # Convertir la proposicion a simbolos y verificar que sea una proposicion valida
+def analisis_lexico(proposicion):
+    # Cambiar frase a minusculas y separar por espacios
     tokens = proposicion.lower().split(' ')
-    print("\nTokens:", tokens)
     
-    # crear una lista y guardar el tipo de token y el valor
+    # Tokenizar palabras
     listaTokens = []
     for token in tokens:
         if token == 'y':
@@ -29,36 +23,45 @@ def main():
         else:
             listaTokens.append(Token(TokenType.PALABRA, token))
     listaTokens.append(Token(TokenType.EOL, ''))
-    
-    # Imprimir la lista de tokens
-    print("\nLista de tokens:")
+    return listaTokens  
+
+# Analizador Sintactico
+def print_ast(node, level=0):
+    indent = "  " * level
+    if isinstance(node, PropNode):
+        print(f"{indent}PropNode: {node}")
+    elif isinstance(node, NegNode):
+        print(f"{indent}NegNode")
+        print_ast(node.child, level + 1)
+    elif isinstance(node, OperatorNode):
+        print(f"{indent}CondNode: {node.operator}")
+        print_ast(node.left, level + 1)
+        print_ast(node.right, level + 1)
+
+def main():
+    # Solicta al que ingrese una proposicion
+    print("Ingrese una proposicion: ")
+    tokens = analisis_lexico(input())
+
+    print("\nAnalisis Lexico:")
     print("Tipo\tValor")
-    for token in listaTokens:
+    for token in tokens:
         print(token.tipo, token.valor)
         
-    # Analizar tokens con el automata : Analizador Sintactico
-    def print_ast(node, level=0):
-        indent = "  " * level
-        if isinstance(node, PropNode):
-            print(f"{indent}PropNode: {node.value}")
-        elif isinstance(node, NegNode):
-            print(f"{indent}NegNode")
-            print_ast(node.child, level + 1)
-        elif isinstance(node, CondNode):
-            print(f"{indent}CondNode: {node.operator}")
-            print_ast(node.left, level + 1)
-            print_ast(node.right, level + 1)
-            
-    print("\nProcesar Automata:")
+    print("\nAnalisis Sintactico:")
     automata = Automata()
-    resultado = automata.evaluar(listaTokens)
-
+    resultado = automata.evaluar(tokens)
     if resultado:
-        print("La proposición es correcta.")
+        print("La proposición es correcta.")       
+    else:
+        print("La proposición es incorrecta.") 
+        
+    print("Analisis Semantico")
+    if resultado:
         print("\nAST generado:")
         print_ast(resultado)  # Asumiendo que tienes una función para imprimir el AST
-    else:
-        print("La proposición es incorrecta.")    
+
+ 
     
 if __name__ == "__main__":
     main()
